@@ -29,6 +29,7 @@ const sentimentLabelMap: SentimentLabelMap = {
 
 function App() {
     const [sentiment, setSentiment] = useState<Sentiment>(Sentiment.Neutral);
+    const [sentimentScore, setSentimentScore] = useState<number | null>(null);
     const [showSentiment, setShowSentiment] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +45,22 @@ function App() {
         ref.current.style.setProperty('--color-c', colorC);
     }, [sentiment]);
 
+    const getEmoji = (sentiment: Sentiment) => {
+        switch (sentiment) {
+            case Sentiment.Negative:
+                return '😡';
+                break;
+            case Sentiment.Neutral:
+                return '😐';
+                break;
+            case Sentiment.Positive:
+                return '😊';
+                break;
+            default:
+                return '😐';
+        }
+    };
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -56,6 +73,7 @@ function App() {
         const form = event.target as HTMLFormElement;
         form.reset();
         setSentiment(Sentiment.Neutral);
+        setSentimentScore(null);
         setShowSentiment(false);
         setError(null);
     };
@@ -74,10 +92,12 @@ function App() {
 
             const data = await response.json();
             setSentiment(data.sentiment_label);
+            setSentimentScore(data.sentiment_score.toFixed(2));
             setShowSentiment(true);
+            setError(null);
         } catch (error) {
             console.error(error);
-            setError('Failed to fetch results.');
+            setError('Error. No word provided.');
         }
     };
 
@@ -104,14 +124,18 @@ function App() {
                         </button>
                     </div>
                 </form>
-                <div className='results'>
+                <div className='sentiment_wrapper'>
                     {showSentiment && (
-                        <div className='sentiment'>
-                            {sentimentLabelMap[sentiment]}
-                        </div>
+                        <>
+                            <div className='result'>
+                                {sentimentLabelMap[sentiment]}
+                            </div>
+                            <div className='result'>{sentimentScore}</div>
+                            <div className='result'>{getEmoji(sentiment)}</div>
+                        </>
                     )}
-                    {error && <div className='error'>{error}</div>}
                 </div>
+                {error && <div className='error'>{error}</div>}
             </div>
         </div>
     );
