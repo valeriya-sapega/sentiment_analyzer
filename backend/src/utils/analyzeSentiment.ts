@@ -2,6 +2,12 @@ import natural from 'natural';
 import stopword from 'stopword';
 import { standardDict } from './standardDict';
 
+enum Sentiment {
+    Negative = 1,
+    Neutral = 2,
+    Positive = 3,
+}
+
 const convertToStandard = (text: string): string => {
     const data = text.split(' ');
     return data
@@ -24,11 +30,11 @@ const removeNonAlphabetic = (text: string): string => {
 
 const getLevel = (anylisisScore: number) => {
     if (anylisisScore > 0.1) {
-        return 'Positive';
+        return Sentiment.Positive;
     } else if (anylisisScore < -0.1) {
-        return 'Negative';
+        return Sentiment.Negative;
     } else {
-        return 'Neutral';
+        return Sentiment.Neutral;
     }
 };
 
@@ -58,11 +64,11 @@ export const analyzeSentiment = (content: string) => {
     );
 
     const analysisScore = sentimAnalyzer.getSentiment(filteredData);
-    const analysisLable = getLevel(analysisScore);
+    const analysisLabel = getLevel(analysisScore);
 
     const result = {
         analysisScore,
-        analysisLable,
+        analysisLabel,
     };
     console.log('Sentiment  Score : ', analysisScore);
 

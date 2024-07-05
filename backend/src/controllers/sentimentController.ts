@@ -12,7 +12,7 @@ export const handleContent = async (req: Request, res: Response) => {
         res.status(200).json({
             message: 'Data received',
             sentiment_score: result.analysisScore,
-            sentiment_label: result.analysisLable,
+            sentiment_label: result.analysisLabel,
         });
     } catch (error) {
         res.status(500).json({ error });
